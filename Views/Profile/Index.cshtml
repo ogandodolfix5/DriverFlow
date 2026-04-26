@@ -1,0 +1,51 @@
+@model MoneyTracker.Models.DriverProfile
+
+@{
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<div class="container mt-4">
+    <h2>👤 Mi Perfil de Driver</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            <form asp-action="Index" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Nombre Completo</label>
+                        <input asp-for="Nombre" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Vehículo</label>
+                        <input asp-for="Vehiculo" class="form-control" placeholder="Toyota Corolla, Honda, etc." />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Placa</label>
+                        <input asp-for="Placa" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input asp-for="Telefono" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input asp-for="Email" type="email" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Guardar Perfil</button>
+            </form>
+        </div>
+    </div>
+</div>

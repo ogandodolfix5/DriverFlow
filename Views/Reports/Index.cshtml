@@ -1,0 +1,231 @@
+@model IEnumerable<MoneyTracker.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Reportes - MoneyTracker";
+}
+
+<div class="container mt-4">
+    <h1 class="display-5 fw-bold mb-4">📋 Reportes Generales</h1>
+
+    <!-- Filtros de Fecha + Botón Enviar por Correo -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" name="fechaDesde" value="@ViewBag.FechaDesde" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" name="fechaHasta" value="@ViewBag.FechaHasta" class="form-control" />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">🔍 Filtrar</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="/Reports/Index" class="btn btn-secondary w-100">Limpiar</a>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" onclick="sendReport()" class="btn btn-success w-100">
+                        📧 Enviar Reporte por Correo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resumen General -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <h6>Total Ingresos</h6>
+                    <h3>@ViewBag.TotalIngresos?.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body">
+                    <h6>Total Gastos</h6>
+                    <h3>@ViewBag.TotalGastos?.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <h6>Neto Total</h6>
+                    <h3>@ViewBag.TotalNeto?.ToString("C")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h6>Transacciones</h6>
+                    <h3>@ViewBag.CantidadTransacciones</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Por Aplicación -->
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h5>📍 Por Aplicación</h5>
+                </div>
+                <div class="card-body p-2 p-md-3">
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Aplicación</th>
+                                    <th class="text-end">Ingresos</th>
+                                    <th class="text-end">Gastos</th>
+                                    <th class="text-end">Neto</th>
+                                    <th class="text-end">Viajes</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in (dynamic?)ViewBag.PorAplicacion ?? new List<dynamic>())
+                                {
+                                    <tr>
+                                        <td>@item.Aplicacion</td>
+                                        <td class="text-end">@item.Ingresos.ToString("C")</td>
+                                        <td class="text-end text-danger">@item.Gastos.ToString("C")</td>
+                                        <td class="text-end fw-bold">@item.Neto.ToString("C")</td>
+                                        <td class="text-end">@item.Cantidad</td>
+                                        <td class="text-center">
+                                            <!-- FORMULARIO CORREGIDO -->
+                                            <form asp-controller="Home" 
+                                                  asp-action="EliminarPorAplicacion" 
+                                                  method="post" 
+                                                  style="display: inline-block;">
+                                                <input type="hidden" name="Aplicacion" value="@item.Aplicacion" />
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit" 
+                                                        class="btn btn-danger btn-sm"
+                                                        onclick="return confirm('¿Estás seguro de eliminar todos los registros de @item.Aplicacion? Esta acción no se puede deshacer.');">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Por Tanda -->
+        <div class="col-md-6">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h5>⏰ Por Tanda Horaria</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tanda</th>
+                                <th class="text-end">Neto</th>
+                                <th class="text-end">Viajes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in (dynamic?)ViewBag.PorTanda ?? new List<dynamic>())
+                            {
+                                <tr>
+                                    <td>@item.Tanda</td>
+                                    <td class="text-end fw-bold">@item.Neto.ToString("C")</td>
+                                    <td class="text-end">@item.Cantidad</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Todas las transacciones filtradas -->
+    <div class="card shadow">
+        <div class="card-header bg-light">
+            <h5>Últimas Transacciones</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Aplicación</th>
+                            <th>Tanda</th>
+                            <th class="text-end">Bruto</th>
+                            <th class="text-end">Gastos</th>
+                            <th class="text-end">Tips</th>
+                            <th class="text-end">Neto</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                <td><strong>@item.Aplicacion</strong></td>
+                                <td>@item.TandaHoraria</td>
+                                <td class="text-end">@item.MontoBruto.ToString("C")</td>
+                                <td class="text-end text-danger">@item.GetTotalGastos().ToString("C")</td>
+                                <td class="text-end text-success">@item.Tips.ToString("C")</td>
+                                <td class="text-end fw-bold">@item.GetNeto().ToString("C")</td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    No hay transacciones aún. ¡Agrega la primera!
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function sendReport() {
+            if (!confirm("¿Deseas enviar el reporte actual a tu correo electrónico?")) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/Reports/SendReport', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    alert("✅ Reporte enviado correctamente a tu correo!");
+                } else {
+                    alert("❌ No se pudo enviar el reporte.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("❌ Error de conexión. Inténtalo nuevamente.");
+            }
+        }
+    </script>
+}

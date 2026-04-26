@@ -1,0 +1,219 @@
+﻿@model IEnumerable<MoneyTracker.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Inicio - DriverCash";
+}
+
+<div class="container mt-4">
+
+    <!-- Saludo -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">👋 ¡Hola, <span class="text-primary">@ViewBag.DriverName</span>!</h1>
+        <p class="lead text-muted">Controla tus ingresos y gastos diarios</p>
+    </div>
+
+    <!-- Cards de Resumen -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3 col-6">
+            <div class="card text-white bg-success h-100 shadow">
+                <div class="card-body text-center py-3">
+                    <h6>Ingresos Hoy</h6>
+                    <h2 class="mb-0">@(ViewBag.IngresosHoy?.ToString("C0") ?? "$0")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card text-white bg-danger h-100 shadow">
+                <div class="card-body text-center py-3">
+                    <h6>Gastos Hoy</h6>
+                    <h2 class="mb-0">@(ViewBag.GastosHoy?.ToString("C0") ?? "$0")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card text-white bg-primary h-100 shadow">
+                <div class="card-body text-center py-3">
+                    <h6>Neto Hoy</h6>
+                    <h2 class="mb-0">@(ViewBag.NetoHoy?.ToString("C0") ?? "$0")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card h-100 shadow border-primary">
+                <div class="card-body text-center py-3">
+                    <h6 class="text-primary">Meta Mensual</h6>
+                    <button class="btn btn-outline-primary btn-sm mt-2" data-bs-toggle="modal"
+                            data-bs-target="#setGoalModal">
+                        Cambiar Meta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progreso de Meta Dinámico -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5>🎯 Progreso de Meta Actual</h5>
+                </div>
+                <div class="card-body text-center py-4">
+                    <h1 class="display-1 fw-bold text-success <h1 class=" display-1 fw-bold text-success">
+                        @(ViewBag.ProgresoMeta ?? ViewBag.Progreso ?? 0)%</h1>
+                        <p class="text-muted mb-3">de la meta alcanzada</p>
+                    
+                        <div class="progress mb-4" style="height: 45px; border-radius: 50px;">
+                            <div class="progress-bar bg-success fw-bold" style="width: @(ViewBag.ProgresoMeta ?? 0)%">
+                                @(ViewBag.ProgresoMeta ?? 0)%
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <small class="text-muted">Acumulado</small>
+                                <h5 class="fw-bold text-success">@ViewBag.TotalNeto?.ToString("C")</h5>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">Meta</small>
+                                <h5 class="fw-bold">@(ViewBag.Meta?.MontoMeta?.ToString("C") ?? "$0")</h5>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(ViewBag.MensajeMeta))
+                        {
+                            <div class="mt-4 alert alert-light">
+                                <strong>@ViewBag.MensajeMeta</strong>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recomendaciones Inteligentes -->
+        <div class="card shadow mb-5">
+            <div class="card-header bg-info text-white">
+                <h5>💡 Recomendaciones Inteligentes</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <strong>🚀 Mejor Aplicación:</strong><br>
+                            <span class="fs-5">@(ViewBag.MejorAplicacion ?? "Sin datos")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <strong>⏰ Mejor Tanda:</strong><br>
+                            <span class="fs-5">@(ViewBag.MejorTanda ?? "Sin datos")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="alert alert-light">
+                            <strong>📅 Días trabajados:</strong> @(ViewBag.TotalDiasTrabajados ?? 0)
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-light">
+                            <strong>💰 Promedio Neto por día:</strong>
+                            @(ViewBag.PromedioNetoPorDia?.ToString("C") ?? "$0.00")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimas Transacciones -->
+        <div class="card shadow">
+            <div class="card-header">
+                <h5>Últimas Transacciones</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Aplicación</th>
+                                <th>Tanda</th>
+                                <th class="text-end">Bruto</th>
+                                <th class="text-end">Gastos</th>
+                                <th class="text-end">Tips</th>
+                                <th class="text-end">Neto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Aplicacion</td>
+                                    <td>@item.TandaHoraria</td>
+                                    <td class="text-end">@item.MontoBruto.ToString("C")</td>
+                                    <td class="text-end text-danger">@item.GetTotalGastos().ToString("C")</td>
+                                    <td class="text-end text-success">@item.Tips.ToString("C")</td>
+                                    <td class="text-end fw-bold">@item.GetNeto().ToString("C")</td>
+                                </tr>
+                            }
+                            @if (!Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center py-5 text-muted">
+                                        No hay transacciones aún. Usa el botón + para agregar la primera.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón Flotante Circular -->
+    <button type="button"
+            class="btn btn-primary btn-lg rounded-circle shadow-lg position-fixed bottom-0 end-0 m-4 d-flex align-items-center justify-content-center"
+            style="width: 70px; height: 70px; z-index: 9999;" data-bs-toggle="modal" data-bs-target="#addTransactionModal"
+            title="Agregar Ingreso / Gasto">
+        <i class="bi bi-plus-lg fs-1"></i>
+    </button>
+
+    <!-- Modales -->
+    @await Html.PartialAsync("~/Views/Transactions/Create.cshtml", new MoneyTracker.Models.Transaction())
+    @await Html.PartialAsync("~/Views/Goals/SetGoal.cshtml", new MoneyTracker.Models.Goal
+    {
+        FechaInicio = DateTime.Today,
+        FechaFin = DateTime.Today.AddMonths(1)
+    })
+
+    @section Scripts {
+        <script>
+            async function saveTransaction() {
+                const form = document.getElementById("transactionForm");
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch('/Transactions/Create', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        bootstrap.Modal.getInstance(document.getElementById('addTransactionModal')).hide();
+                        form.reset();
+                        alert("✅ Transacción guardada correctamente!");
+                        location.reload(); // Actualiza todo (incluyendo progreso de meta)
+                    } else {
+                        alert("❌ Error al guardar");
+                    }
+                } catch (error) {
+                    alert("Error de conexión");
+                }
+            }
+        </script>
+    }
