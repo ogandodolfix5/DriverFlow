@@ -11,6 +11,10 @@ RUN dotnet publish "MoneyTracker.csproj" -c Release -o /app/publish /p:UseAppHos
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
+
+# Crear carpeta para Data Protection Keys (importante para Login)
+RUN mkdir -p /app/DataProtectionKeys
+
 COPY --from=build /app/publish .
 
 EXPOSE 8080
