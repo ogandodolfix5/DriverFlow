@@ -2,20 +2,22 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
 using MoneyTracker.Data;
 using Microsoft.AspNetCore.Identity;
 using MoneyTracker.Services;
 using Microsoft.AspNetCore.DataProtection;
-using System.IO;  
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ==================== SERVICIOS ====================
 
-// Base de datos PostgreSQL (para Render)
+// PostgreSQL (versión completa para evitar errores de using)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseNpgsql(connString);   // Usando método completo
+});
 
 // Identity
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
@@ -27,12 +29,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Data Protection (muy importante para Login en Render)
+// Data Protection
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/app/DataProtectionKeys"))
     .SetApplicationName("DriverFlow");
 
-// Servicio de Email
+// Email Service
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<EmailService>();
 
@@ -49,9 +51,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -61,7 +61,7 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
-// ==================== APLICAR MIGRACIONES AUTOMÁTICAMENTE ====================
+// ==================== MIGRACIONES ====================
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -69,11 +69,11 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         await context.Database.MigrateAsync();
-        Console.WriteLine("✅ Migraciones aplicadas correctamente en PostgreSQL");
+        Console.WriteLine("✅ Migraciones PostgreSQL OK");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Error aplicando migraciones: {ex.Message}");
+        Console.WriteLine($"❌ Error migraciones: {ex.Message}");
     }
 }
 

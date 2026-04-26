@@ -75,6 +75,8 @@ C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\Microsoft.VisualStudio.Web.CodeGe
 C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\MimeKit.dll
 C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\Mono.TextTemplating.dll
 C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\Newtonsoft.Json.dll
+C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\Npgsql.dll
+C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\NuGet.Common.dll
 C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\NuGet.Configuration.dll
 C:\Users\PCJESUS\MoneyTracker\bin\Debug\net9.0\NuGet.DependencyResolver.Core.dll
@@ -266,6 +268,7 @@ C:\Users\PCJESUS\MoneyTracker\obj\Debug\net9.0\MoneyTracker.MvcApplicationPartsA
 C:\Users\PCJESUS\MoneyTracker\obj\Debug\net9.0\MoneyTracker.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\PCJESUS\MoneyTracker\obj\Debug\net9.0\MoneyTracker.RazorAssemblyInfo.cache
 C:\Users\PCJESUS\MoneyTracker\obj\Debug\net9.0\MoneyTracker.RazorAssemblyInfo.cs
+C:\Users\PCJESUS\MoneyTracker\obj\Debug\net9.0\MoneyTracker.sourcelink.json
 C:\Users\PCJESUS\MoneyTracker\obj\Debug\net9.0\rjimswa.dswa.cache.json
 C:\Users\PCJESUS\MoneyTracker\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
 C:\Users\PCJESUS\MoneyTracker\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
